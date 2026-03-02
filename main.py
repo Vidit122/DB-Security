@@ -1,9 +1,12 @@
 from fastapi import FastAPI, HTTPException
 from models import ActivityLog
 from db import get_cursor, conn
-from detection import calculate_risk
+from role_behavior import build_role_profiles
 
+from detection import calculate_risk
+build_role_profiles()
 app = FastAPI(title="SECaaS Insider Threat Detection Backend")
+
 
 @app.post("/logActivity")
 def log_activity(log: ActivityLog):
@@ -43,8 +46,8 @@ def log_activity(log: ActivityLog):
         "max_records": row[0],
         "allowed_actions": row[1],
         "allowed_resources": row[2],
-        "start_hour": row[3],
-        "end_hour": row[4]
+        "normal_start_hour": row[3],
+        "normal_end_hour": row[4]
     }
 
     # 3️⃣ Risk calculation
@@ -77,3 +80,4 @@ def log_activity(log: ActivityLog):
         "severity": severity,
         "reasons": reasons
     }
+
